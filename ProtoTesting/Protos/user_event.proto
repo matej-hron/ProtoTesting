@@ -1,0 +1,12 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+
+message UserEvent {
+  string user_id = 1;
+  google.protobuf.Timestamp event_date = 2;
+}
+
+message UserEvents
+{
+    repeated UserEvent events = 1;
+}
