@@ -5,15 +5,18 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <UserSecretsId>b71e1375-9d99-4e81-b6b0-0573ddd17c27</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.28.2" />
     <PackageReference Include="Google.Protobuf.Tools" Version="3.27.3" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.67.0" />
     <PackageReference Include="Grpc.Tools" Version="2.69.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,7 +24,7 @@
   </ItemGroup>
     
     <ItemGroup>
-        <Protobuf Include="Protos\user_event.proto" GrpcServices="None" />
+        <Protobuf Include="Protos\user_event.proto" GrpcServices="Client" />
     </ItemGroup>
 
 </Project>
