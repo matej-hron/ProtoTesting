@@ -3,6 +3,7 @@ using System;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 const string filePath = @"C:\projects\grpc\user_events.pb";
+const string filePathStreamed = @"C:\projects\grpc\user_events_stream.pb";
 
 var userEvents = new UserEvents
 {
@@ -15,22 +16,30 @@ var userEvents = new UserEvents
                 },
                 new UserEvent
                 {
-                    UserId = "david",
+                    UserId = "ema",
+                    EventDate = Timestamp.FromDateTime(DateTime.UtcNow.AddDays(-1))
+                },
+                new UserEvent
+                {
+                    UserId = "davidbabka",
                     EventDate = Timestamp.FromDateTime(DateTime.UtcNow.AddDays(-1))
                 }
             }
 };
 
-
-InitAppend();
+File.Delete(filePathStreamed);
+File.Delete(filePath);
 WriteUserEvents(userEvents);
-
-var events = ReadUserEvents();
-foreach(var e in events.Events)
-{
-    Console.WriteLine($"{e.UserId}, {e.EventDate}");
-}
-Console.WriteLine(events.Events.Count);
+WriteUserEvent(new UserEvent { UserId = "davidbabka", EventDate = Timestamp.FromDateTime(DateTime.UtcNow.AddDays(-1)) });
+WriteUserEvent(new UserEvent { UserId = "ema", EventDate = Timestamp.FromDateTime(DateTime.UtcNow.AddDays(-1)) });
+WriteUserEvent(new UserEvent { UserId = "Evgenij", EventDate = Timestamp.FromDateTime(DateTime.UtcNow.AddDays(-1)) });
+ReadStream();
+//var events = ReadUserEvents();
+//foreach(var e in events.Events)
+//{
+//    Console.WriteLine($"{e.UserId}, {e.EventDate}");
+//}
+//Console.WriteLine(events.Events.Count);
 Console.ReadLine();
 
 static void WriteUserEvents(UserEvents userEvents)
@@ -38,21 +47,30 @@ static void WriteUserEvents(UserEvents userEvents)
     using var output = File.Create(filePath);
     userEvents.WriteTo(output);
 }
-
-static void InitAppend()
-{
-    using var fs = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.Read);
-    using var output = new CodedOutputStream(fs);
-
-    var userEvents = new UserEvents();
-
-    userEvents.WriteTo(output); // Write protobuf message
-    output.Flush(); // Ensure all data is written
-}
-
-
 static UserEvents ReadUserEvents()
 {
     using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
     return UserEvents.Parser.ParseFrom(fs);
+}
+
+static void WriteUserEvent(UserEvent userEvent)
+{
+    using var output = new FileStream(filePathStreamed, FileMode.Append, FileAccess.Write);
+    userEvent.WriteDelimitedTo(output);
+}
+
+static void ReadStream()
+{
+    using var input = new FileStream(filePathStreamed, FileMode.Open, FileAccess.Read);
+
+    Console.WriteLine("Reading stored events:");
+
+    while (input.Position < input.Length)
+    {
+        var userEvent = UserEvent.Parser.ParseDelimitedFrom(input);
+        if (userEvent != null)
+        {
+            Console.WriteLine($"User: {userEvent.UserId}, Event Date: {userEvent.EventDate.ToDateTime():u}");
+        }
+    }
 }
