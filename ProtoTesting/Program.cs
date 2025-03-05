@@ -1,8 +1,10 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System;
+using System.Net;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using Grpc.Net.Client;
 using SettingsStore.WebAppService.Core.Grpc;
 const string filePath = @"C:\projects\grpc\user_events.pb";
 const string filePathStreamed = @"C:\projects\grpc\user_events_stream.pb";
@@ -14,23 +16,24 @@ var userEvents = new UserEventsMessage
                 new UserEvent
                 {
                     UserId = "matej",
-                    EventDate = Timestamp.FromDateTime(DateTime.UtcNow)
+                    //EventDate = Timestamp.FromDateTime(DateTime.UtcNow)
                 },
                 new UserEvent
                 {
                     UserId = "ema",
-                    EventDate = Timestamp.FromDateTime(DateTime.UtcNow.AddDays(-1))
+                    //EventDate = Timestamp.FromDateTime(DateTime.UtcNow.AddDays(-1))
                 },
                 new UserEvent
                 {
                     UserId = "davidbabka",
-                    EventDate = Timestamp.FromDateTime(DateTime.UtcNow.AddDays(-1))
+                    //EventDate = Timestamp.FromDateTime(DateTime.UtcNow.AddDays(-1))
                 }
             }
 };
 
 //TestRW(filePath, filePathStreamed, userEvents);
 
+//WriteUserEvent(new UserEvent { UserId = "julia" });
 await RunGrpcClient();
 Console.ReadLine();
 
@@ -62,16 +65,18 @@ static void ReadStream()
         var userEvent = UserEvent.Parser.ParseDelimitedFrom(input);
         if (userEvent != null)
         {
-            Console.WriteLine($"User: {userEvent.UserId}, Event Date: {userEvent.EventDate.ToDateTime():u}");
+            Console.WriteLine($"User: {userEvent.UserId}");
         }
     }
 }
 
 async Task RunGrpcClient()
 {
-    // Replace with the correct namespace if different
-    using var channel = Grpc.Net.Client.GrpcChannel.ForAddress("http://localhost:20344");
-    var client = new SettingsStore.WebAppService.Core.Grpc.UserEvents.UserEventsClient(channel); // gRPC client
+
+    using var channel = GrpcChannel.ForAddress("http://localhost:25001");
+    //using var channel = GrpcChannel.ForAddress("http://settingsstore.reg-int-uswe.teams-core-settingsstore.northcentralus-test.cosmic-int.office.net:5001");
+
+    var client = new UserEvents.UserEventsClient(channel); // gRPC client
 
     var request = new UserEventsRequest
     {
@@ -85,7 +90,7 @@ async Task RunGrpcClient()
 
     await foreach (var userEvent in call.ResponseStream.ReadAllAsync<UserEvent>())
     {
-        Console.WriteLine($"{userEvent.UserId}");
+        Console.WriteLine($"{userEvent.UserId}, {userEvent.EventDate}");
     }
 }
 
@@ -94,10 +99,10 @@ static void TestRW(string filePath, string filePathStreamed, UserEventsMessage u
     File.Delete(filePathStreamed);
     File.Delete(filePath);
     WriteUserEvents(userEvents);
-    WriteUserEvent(new UserEvent { UserId = "davidbabka", EventDate = Timestamp.FromDateTime(DateTime.UtcNow.AddDays(-1)) });
-    WriteUserEvent(new UserEvent { UserId = "ema", EventDate = Timestamp.FromDateTime(DateTime.UtcNow.AddDays(-1)) });
-    WriteUserEvent(new UserEvent { UserId = "Evgenij", EventDate = Timestamp.FromDateTime(DateTime.UtcNow.AddDays(-1)) });
-    Enumerable.Range(1, 10).ToList().ForEach(i => WriteUserEvent(new UserEvent { UserId = $"{i}", EventDate = Timestamp.FromDateTime(DateTime.UtcNow.AddDays(-1)) }));
+    WriteUserEvent(new UserEvent { UserId = "davidbabka", EventDate = Timestamp.FromDateTime(DateTime.Now) });
+    WriteUserEvent(new UserEvent { UserId = "ema" });
+    WriteUserEvent(new UserEvent { UserId = "Evgenij" });
+    Enumerable.Range(1, 10).ToList().ForEach(i => WriteUserEvent(new UserEvent { UserId = $"{i}" }));
     ReadStream();
     //var events = ReadUserEvents();
     //foreach(var e in events.Events)
