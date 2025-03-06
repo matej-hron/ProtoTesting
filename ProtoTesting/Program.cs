@@ -13,17 +13,17 @@ const string cosmicUrl = "http://settingsstore.reg-int-uswe.teams-core-settingss
 
 const string tenantId = "testGrpc101";
 
-//await TestWriteAsync(localUrl, new AddUserEventRequest
-//{
-//    EventType = "testevent",
-//    TenantId = tenantId,
-//    UserEvent = new UserEvent
-//    {
-//        UserId = "Damiano",
-//        EventDate = Timestamp.FromDateTime(new DateTime(2025, 2, 1, 0, 0, 0, DateTimeKind.Utc))
-//    }
-//});
-//await TestWriteAsync(localUrl, new AddUserEventRequest
+await TestWriteAsync(cosmicUrl, new AddUserEventRequest
+{
+    EventType = "testevent",
+    TenantId = tenantId,
+    UserEvent = new UserEvent
+    {
+        UserId = "Damiano",
+        EventDate = Timestamp.FromDateTime(new DateTime(2025, 2, 1, 0, 0, 0, DateTimeKind.Utc))
+    }
+});
+//await TestWriteAsync(cosmicUrl, new AddUserEventRequest
 //{
 //    EventType = "testevent",
 //    TenantId = tenantId,
@@ -40,7 +40,7 @@ Console.ReadLine();
 
 async Task TestReadAsync(string url, bool dummyEndpoint, string tenantId, DateTime from, DateTime to)
 {
-
+    Console.WriteLine($"Reading from {url}, Dummy: {dummyEndpoint}");
     using var channel = GrpcChannel.ForAddress(url);
 
     var request = new UserEventsReadRequest
@@ -78,6 +78,7 @@ async Task TestReadAsync(string url, bool dummyEndpoint, string tenantId, DateTi
 
 async Task TestWriteAsync(string url, AddUserEventRequest request)
 {
+    Console.WriteLine($"Sending request to {url}");
     using var channel = GrpcChannel.ForAddress(url);
     var client = new UserEvents.UserEventsClient(channel);
     await client.AddUserEventAsync(request, new CallOptions { });
