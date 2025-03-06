@@ -6,11 +6,11 @@ option csharp_namespace = "SettingsStore.WebAppService.Core.Grpc";
 
 package userEvents;
 
-service UserEvents {
+service UserEventsDummy {
   rpc GetUserEvents (UserEventsReadRequest) returns (stream UserEvent);
 }
 
-service UserEvents2 {
+service UserEvents {
   rpc GetUserEvents (UserEventsReadRequest) returns (stream UserEvent);
   rpc AddUserEvent (AddUserEventRequest) returns (google.protobuf.Empty);
 }
@@ -31,9 +31,4 @@ message AddUserEventRequest {
 message UserEvent {
   string user_id = 1;
   google.protobuf.Timestamp event_date = 2;
-}
-
-message UserEventsMessage
-{
-    repeated UserEvent events = 1;
 }
