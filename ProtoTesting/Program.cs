@@ -8,6 +8,8 @@ using Grpc.Net.Client;
 using SettingsStore.WebAppService.Core.Grpc;
 const string filePath = @"C:\projects\grpc\user_events.pb";
 const string filePathStreamed = @"C:\projects\grpc\user_events_stream.pb";
+const string localUrl = "http://localhost:25001";
+const string cosmicUrl = "http://settingsstore.reg-int-uswe.teams-core-settingsstore.northcentralus-test.cosmic-int.office.net:5001";
 
 var userEvents = new UserEventsMessage
 {
@@ -34,7 +36,15 @@ var userEvents = new UserEventsMessage
 //TestRW(filePath, filePathStreamed, userEvents);
 
 //WriteUserEvent(new UserEvent { UserId = "julia" });
-await RunGrpcClient();
+await TestReadAsync(localUrl, false);
+
+//foreach (var item in Enumerable.Range(0, 10000))
+//{
+//    await RunGrpcClient(cosmicUrl, true);
+//}
+
+
+
 Console.ReadLine();
 
 static void WriteUserEvents(UserEventsMessage userEvents)
@@ -70,30 +80,60 @@ static void ReadStream()
     }
 }
 
-async Task RunGrpcClient()
+async Task TestReadAsync(string url, bool dummyEndpoint)
 {
 
-    using var channel = GrpcChannel.ForAddress("http://localhost:25001");
-    //using var channel = GrpcChannel.ForAddress("http://settingsstore.reg-int-uswe.teams-core-settingsstore.northcentralus-test.cosmic-int.office.net:5001");
+    using var channel = GrpcChannel.ForAddress(url);
 
-    var client = new UserEvents.UserEventsClient(channel); // gRPC client
-
-    var request = new UserEventsRequest
+    var request = new UserEventsReadRequest
     {
-        EventType = "login",
-        TenantId = "123",
-        StartDate = Timestamp.FromDateTime(DateTime.UtcNow),
-        EndDate = Timestamp.FromDateTime(DateTime.UtcNow)
+        EventType = "testevent",
+        TenantId = "grpcTenant4",
+        StartDate = Timestamp.FromDateTime(new DateTime(2025, 2, 1, 0, 0, 0, DateTimeKind.Utc)),
+        EndDate = Timestamp.FromDateTime(new DateTime(2025, 2, 2, 0, 0, 0, DateTimeKind.Utc))
     };
 
-    using var call = client.GetUserEvents(request);
-
-    await foreach (var userEvent in call.ResponseStream.ReadAllAsync<UserEvent>())
+    if(dummyEndpoint)
     {
-        Console.WriteLine($"{userEvent.UserId}, {userEvent.EventDate}");
+        var client = new UserEvents.UserEventsClient(channel);
+        using var call = client.GetUserEvents(request);
+
+        Console.WriteLine($"Response from {url}, dummy: {dummyEndpoint}");
+        await foreach (var userEvent in call.ResponseStream.ReadAllAsync<UserEvent>())
+        {
+            Console.WriteLine($"{userEvent.UserId}, {userEvent.EventDate}");
+        }
+
     }
+    else
+    {
+        var client = new UserEvents2.UserEvents2Client(channel);
+        using var call = client.GetUserEvents(request);
+
+        await foreach (var userEvent in call.ResponseStream.ReadAllAsync<UserEvent>())
+        {
+            Console.WriteLine($"{userEvent.UserId}, {userEvent.EventDate}");
+        }
+
+    }
+
+    // var client = new UserEvents.UserEventsClient(channel) //: new UserEvents2.UserEvents2Client(channel); // gRPC client
+
+
+    //using var call = client.GetUserEvents(request);
+
+    //await foreach (var userEvent in call.ResponseStream.ReadAllAsync<UserEvent>())
+    //{
+    //    Console.WriteLine($"{userEvent.UserId}, {userEvent.EventDate}");
+    //}
 }
 
+async Task TestWriteAsync(string url, AddUserEventRequest request)
+{
+    using var channel = GrpcChannel.ForAddress(url);
+    var client = new UserEvents2.UserEvents2Client(channel);
+    await client.AddUserEventAsync(request, new CallOptions { });
+}
 static void TestRW(string filePath, string filePathStreamed, UserEventsMessage userEvents)
 {
     File.Delete(filePathStreamed);

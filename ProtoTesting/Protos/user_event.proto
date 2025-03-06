@@ -1,19 +1,31 @@
 syntax = "proto3";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto"; 
 
 option csharp_namespace = "SettingsStore.WebAppService.Core.Grpc";
 
 package userEvents;
 
 service UserEvents {
-  rpc GetUserEvents (UserEventsRequest) returns (stream UserEvent);
+  rpc GetUserEvents (UserEventsReadRequest) returns (stream UserEvent);
 }
 
-message UserEventsRequest {
+service UserEvents2 {
+  rpc GetUserEvents (UserEventsReadRequest) returns (stream UserEvent);
+  rpc AddUserEvent (AddUserEventRequest) returns (google.protobuf.Empty);
+}
+
+message UserEventsReadRequest {
   string event_type = 1;
   string tenant_id = 2;
   google.protobuf.Timestamp start_date = 3;
   google.protobuf.Timestamp end_date = 4;
+}
+
+message AddUserEventRequest {
+  string event_type = 1;
+  string tenant_id = 2;
+  UserEvent user_event = 3;
 }
 
 message UserEvent {
