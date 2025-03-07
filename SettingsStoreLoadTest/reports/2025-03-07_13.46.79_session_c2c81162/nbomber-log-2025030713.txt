@@ -1,0 +1,19 @@
+2025-03-07 13:46:49.798 +00:00 [INF] [ThreadId:1] NBomber 5.8.2 started a new session: 2025-03-07_13.46.79_session_c2c81162
+2025-03-07 13:46:49.807 +00:00 [INF] [ThreadId:1] NBomber started as single node
+2025-03-07 13:46:49.811 +00:00 [INF] [ThreadId:1] License validation....
+2025-03-07 13:46:49.812 +00:00 [WRN] [ThreadId:1] THIS VERSION IS FREE ONLY FOR PERSONAL USE. You can't use it for an organization.
+2025-03-07 13:46:49.814 +00:00 [INF] [ThreadId:1] Reports folder: C:\dev\nbomber\SettingsStoreLoadTest\bin\Debug\net8.0\reports\2025-03-07_13.46.79_session_c2c81162
+2025-03-07 13:46:49.815 +00:00 [INF] [ThreadId:1] Plugins: no plugins were loaded
+2025-03-07 13:46:49.815 +00:00 [INF] [ThreadId:1] Reporting sinks: no reporting sinks were loaded
+2025-03-07 13:46:49.816 +00:00 [INF] [ThreadId:1] Starting init...
+2025-03-07 13:46:49.875 +00:00 [INF] [ThreadId:1] Target scenarios: get_scenario
+2025-03-07 13:46:49.876 +00:00 [INF] [ThreadId:1] Init finished
+2025-03-07 13:46:49.877 +00:00 [INF] [ThreadId:1] Starting warm up...
+2025-03-07 13:46:49.877 +00:00 [INF] [ThreadId:1] Warm up for scenarios: get_scenario
+2025-03-07 13:46:49.878 +00:00 [INF] [ThreadId:1] Warm up duration: 00:00:30
+2025-03-07 13:47:20.914 +00:00 [INF] [ThreadId:7] Starting bombing...
+2025-03-07 13:48:12.774 +00:00 [INF] [ThreadId:7] Waiting on scenarios completion...
+2025-03-07 13:48:13.775 +00:00 [WRN] [ThreadId:7] Stopping test early: stop command activated by CLI
+2025-03-07 13:48:16.772 +00:00 [INF] [ThreadId:7] Calculating final statistics...
+2025-03-07 13:48:17.078 +00:00 [INF] [ThreadId:5] Reports saved in folder: C:\dev\nbomber\SettingsStoreLoadTest\reports\2025-03-07_13.46.79_session_c2c81162
+2025-03-07 13:48:17.247 +00:00 [WRN] [ThreadId:5] THIS VERSION IS FREE ONLY FOR PERSONAL USE. You can't use it for an organization.

@@ -1,0 +1,32 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto"; 
+
+package userEvents;
+
+service UserEventsDummy {
+  rpc GetUserEvents (UserEventsReadRequest) returns (stream UserEvent);
+}
+
+service UserEvents {
+  rpc GetUserEvents (UserEventsReadRequest) returns (stream UserEvent);
+  rpc AddUserEvent (AddUserEventRequest) returns (google.protobuf.Empty);
+}
+
+message UserEventsReadRequest {
+  string event_type = 1;
+  string tenant_id = 2;
+  google.protobuf.Timestamp start_date = 3;
+  google.protobuf.Timestamp end_date = 4;
+}
+
+message AddUserEventRequest {
+  string event_type = 1;
+  string tenant_id = 2;
+  UserEvent user_event = 3;
+}
+
+message UserEvent {
+  string user_id = 1;
+  google.protobuf.Timestamp event_date = 2;
+}
